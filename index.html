@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación Suprema BioEntry P2 - Cotización 2026</title>
+    
+    <!-- Fuentes: Inter y Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Iconos de FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Three.js para renderizado 3D e interactividad 360° -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        apple: {
+                            dark: '#050507',
+                            gray: '#1d1d1f',
+                            lightgray: '#f5f5f7',
+                            blue: '#0071e3',
+                            green: '#34c759',
+                            red: '#ff3b30'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0b0c10;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,10%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,20%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(160,49%,20%,1) 0, transparent 50%);
+            background-attachment: fixed;
+            background-size: cover;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism */
+        .glass-dark {
+            background: rgba(22, 24, 30, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .glass-light {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+        
+        .glass-highlight {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(52, 199, 89, 0.6);
+            box-shadow: 0 0 40px rgba(52, 199, 89, 0.2), inset 0 0 20px rgba(52, 199, 89, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Shimmer animation */
+        .glass-highlight::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.08) 40%,
+                rgba(255, 255, 255, 0.25) 50%,
+                rgba(255, 255, 255, 0.08) 60%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shimmer 7s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(30deg); }
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #a1a1a6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Hotspots interactivos para el visor 360 */
+        .hotspot-pin {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0, 113, 227, 0.9);
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 15px rgba(0, 113, 227, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 20;
+        }
+
+        .hotspot-pin:hover {
+            transform: scale(1.3);
+            background: #34c759;
+            box-shadow: 0 0 20px rgba(52, 199, 89, 0.9);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Canvas 360 wrapper */
+        #canvas360-container {
+            cursor: grab;
+        }
+        #canvas360-container:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-apple-blue selection:text-white">
+
+    <header class="fixed top-0 left-0 right-0 z-50 glass-dark py-4 px-6 border-b border-white/10">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-apple-blue flex items-center justify-center text-white shadow-[0_0_15px_rgba(0,113,227,0.5)]">
+                    <i class="fa-solid fa-fingerprint text-lg"></i>
+                </div>
+                <div>
+                    <span class="font-display font-bold text-white tracking-tight">Suprema BEP-2OD</span>
+                    <span class="text-xs text-gray-400 block">Evaluación de Cotización 2026</span>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
+                <a href="#hero" class="hover:text-white transition-colors">Inicio</a>
+                <a href="#viewer360" class="hover:text-apple-blue transition-colors flex items-center gap-1.5 text-apple-blue font-semibold">
+                    <i class="fa-solid fa-arrows-spin text-xs"></i> Visor 360° HD
+                </a>
+                <a href="#blueprints" class="hover:text-white transition-colors">Planos & Specs</a>
+                <a href="#comparison" class="hover:text-white transition-colors">Comparativa</a>
+                <a href="#verdict" class="hover:text-white transition-colors">Dictamen Final</a>
+            </nav>
+
+            <a href="#viewer360" class="px-4 py-2 rounded-full bg-apple-blue/20 border border-apple-blue/40 text-apple-blue font-medium text-sm hover:bg-apple-blue hover:text-white transition-all flex items-center gap-2">
+                <i class="fa-solid fa-cube"></i> Modo 360°
+            </a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl pt-24">
+
+        <section id="hero" class="min-h-[85vh] flex items-center justify-center py-12">
+            <div class="glass-dark rounded-[2.5rem] p-8 md:p-14 w-full flex flex-col lg:flex-row items-center justify-between gap-12 reveal active">
+                
+                <div class="flex-1 space-y-6 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light text-xs font-semibold text-green-400 tracking-wider uppercase border border-green-500/30">
+                        <i class="fa-solid fa-check-circle"></i> Modelo BEP-2OD • HD Didáctico
+                    </div>
+                    
+                    <h1 class="font-display text-4xl sm:text-6xl font-bold tracking-tight leading-tight text-gradient">
+                        Suprema <br/>BioEntry P2
+                    </h1>
+                    
+                    <p class="text-lg text-gray-300 font-light max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                        Lector biométrico compacto IP de ultra velocidad con sensor óptico OP6, tecnología de detección de huella viva (LFD) y RFID multiformato de doble frecuencia.
+                    </p>
+                    
+                    <div class="pt-2 flex flex-wrap gap-4 justify-center lg:justify-start">
+                        <a href="#viewer360" class="px-8 py-4 rounded-full bg-apple-blue text-white font-semibold hover:bg-blue-600 transition-all shadow-[0_0_25px_rgba(0,113,227,0.5)] flex items-center gap-2">
+                            <i class="fa-solid fa-arrows-spin"></i> Explorar en 360° HD
+                        </a>
+                        <a href="#comparison" class="px-8 py-4 rounded-full glass-light text-white font-semibold hover:bg-white/10 transition-colors flex items-center gap-2">
+                            Ver Cotización ($8,050.40) <i class="fa-solid fa-arrow-down text-xs"></i>
+                        </a>
+                    </div>
+
+                    <!-- Quick specs pill -->
+                    <div class="grid grid-cols-3 gap-3 pt-4 border-t border-white/10 max-w-md mx-auto lg:mx-0">
+                        <div>
+                            <span class="text-xs text-gray-400 block">Velocidad</span>
+                            <span class="font-bold text-white text-sm">1:10,000 / sec</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-400 block">Dimensiones</span>
+                            <span class="font-bold text-white text-sm">50 x 164 x 37.5mm</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-400 block">CPU</span>
+                            <span class="font-bold text-white text-sm">1.0 GHz High-Speed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Showcase Preview Card -->
+                <div class="flex-1 w-full flex flex-col items-center justify-center relative">
+                    <div class="absolute inset-0 bg-apple-blue/20 blur-[100px] rounded-full pointer-events-none"></div>
+                    
+                    <!-- Didactic SVG Illustration of Suprema BioEntry P2 -->
+                    <div class="relative z-10 w-full max-w-sm glass-light p-6 rounded-3xl border border-white/20 text-center flex flex-col items-center">
+                        <div class="bg-gradient-to-b from-gray-900 to-black p-6 rounded-2xl border border-white/10 shadow-2xl w-full flex flex-col items-center">
+                            
+                            <!-- Dynamic HD SVG Reader Render -->
+                            <svg class="w-48 h-80 drop-shadow-[0_15px_30px_rgba(0,113,227,0.4)]" viewBox="0 0 160 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Body Base -->
+                                <rect x="20" y="10" width="120" height="460" rx="16" fill="url(#bodyGrad)" stroke="#3a3d45" stroke-width="3"/>
+                                <!-- Glossy Front Panel -->
+                                <rect x="26" y="18" width="108" height="444" rx="12" fill="url(#glassGrad)" stroke="#1a1c23" stroke-width="2"/>
+                                
+                                <!-- Optical Fingerprint Sensor Prism -->
+                                <rect x="42" y="38" width="76" height="90" rx="8" fill="#091828" stroke="#0071e3" stroke-width="2"/>
+                                <circle cx="80" cy="83" r="28" fill="url(#prismGlow)" opacity="0.8"/>
+                                <path d="M70 75 Q80 65 90 75 Q80 85 70 95 Q80 105 90 95" stroke="#00e5ff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                                <path d="M74 80 Q80 72 86 80 Q80 88 74 96" stroke="#00e5ff" stroke-width="2" fill="none" opacity="0.8"/>
+                                
+                                <!-- LED Indicator Strip -->
+                                <rect x="42" y="138" width="76" height="6" rx="3" fill="#34c759" shadow="0 0 10px #34c759"/>
+                                
+                                <!-- Dual RFID Antenna Zone -->
+                                <circle cx="80" cy="240" r="32" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.4"/>
+                                <path d="M70 240 A10 10 0 0 1 90 240 M65 240 A15 15 0 0 1 95 240 M60 240 A20 20 0 0 1 100 240" stroke="#0071e3" stroke-width="2.5" fill="none"/>
+                                <text x="80" y="285" fill="#a1a1a6" font-size="10" font-family="Inter" text-anchor="middle" font-weight="600">RFID 125kHz / 13.56MHz</text>
+                                
+                                <!-- Suprema Brand Logo -->
+                                <text x="80" y="420" fill="#ffffff" font-size="14" font-family="Plus Jakarta Sans" font-weight="800" text-anchor="middle" letter-spacing="2">SUPREMA</text>
+                                <text x="80" y="435" fill="#0071e3" font-size="9" font-family="Inter" font-weight="700" text-anchor="middle" letter-spacing="1">BIOENTRY P2</text>
+
+                                <!-- Gradients -->
+                                <defs>
+                                    <linearGradient id="bodyGrad" x1="0" y1="0" x2="160" y2="480" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#2c2d35"/>
+                                        <stop offset="1" stop-color="#111216"/>
+                                    </linearGradient>
+                                    <linearGradient id="glassGrad" x1="0" y1="0" x2="160" y2="480" gradientUnits="userSpaceOnUse">
+                                        <stop stop-color="#1f2128"/>
+                                        <stop offset="0.5" stop-color="#0d0e12"/>
+                                        <stop offset="1" stop-color="#050507"/>
+                                    </linearGradient>
+                                    <radialGradient id="prismGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(80 83) rotate(90) scale(28)">
+                                        <stop stop-color="#00e5ff" stop-opacity="0.6"/>
+                                        <stop offset="1" stop-color="#0071e3" stop-opacity="0"/>
+                                    </radialGradient>
+                                </defs>
+                            </svg>
+                        </div>
+
+                        <div class="mt-4 flex items-center justify-between w-full px-2">
+                            <span class="text-xs text-gray-400">Render HD Didáctico</span>
+                            <a href="#viewer360" class="text-xs font-bold text-apple-blue hover:underline flex items-center gap-1">
+                                Interactivo 360° <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="viewer360" class="py-16 min-h-[90vh] flex flex-col justify-center">
+            
+            <div class="text-center space-y-3 reveal mb-8">
+                <span class="px-4 py-1.5 rounded-full bg-apple-blue/10 border border-apple-blue/30 text-apple-blue text-xs font-bold uppercase tracking-widest">
+                    <i class="fa-solid fa-cube"></i> Visor Interactivo 3D
+                </span>
+                <h2 class="font-display text-3xl sm:text-5xl font-bold text-white">
+                    Inspección del Producto en 360°
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto text-sm sm:text-base">
+                    Arrastra con el mouse o dedo para girar el equipo en cualquier dirección. Haz clic en los botones de ángulo o en los puntos de interés para revisar cada componente.
+                </p>
+            </div>
+
+            <!-- 360 Viewer Card Container -->
+            <div class="glass-dark rounded-[2.5rem] p-6 sm:p-10 border border-white/15 relative overflow-hidden reveal">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-center">
+                    
+                    <!-- Interactive Controls Panel (Left) -->
+                    <div class="space-y-4 order-2 lg:order-1">
+                        <h3 class="font-display text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-apple-blue"></i> Ángulos de Vista
+                        </h3>
+                        <p class="text-xs text-gray-400">Selecciona un punto de vista prefijado o usa la rotación manual continua:</p>
+
+                        <div class="space-y-2">
+                            <button onclick="setCameraView('front')" class="w-full py-3 px-4 rounded-xl glass-light hover:bg-white/15 text-left text-sm font-semibold flex items-center justify-between transition-all group border border-white/10">
+                                <span><i class="fa-solid fa-stop text-apple-blue mr-2"></i> Vista Frontal</span>
+                                <i class="fa-solid fa-chevron-right text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            </button>
+                            <button onclick="setCameraView('sensor')" class="w-full py-3 px-4 rounded-xl glass-light hover:bg-white/15 text-left text-sm font-semibold flex items-center justify-between transition-all group border border-white/10">
+                                <span><i class="fa-solid fa-fingerprint text-cyan-400 mr-2"></i> Sensor Óptico OP6</span>
+                                <i class="fa-solid fa-chevron-right text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            </button>
+                            <button onclick="setCameraView('rfid')" class="w-full py-3 px-4 rounded-xl glass-light hover:bg-white/15 text-left text-sm font-semibold flex items-center justify-between transition-all group border border-white/10">
+                                <span><i class="fa-solid fa-wifi text-purple-400 mr-2"></i> Zona Lector RFID</span>
+                                <i class="fa-solid fa-chevron-right text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            </button>
+                            <button onclick="setCameraView('back')" class="w-full py-3 px-4 rounded-xl glass-light hover:bg-white/15 text-left text-sm font-semibold flex items-center justify-between transition-all group border border-white/10">
+                                <span><i class="fa-solid fa-gears text-green-400 mr-2"></i> Montaje Posterior & Arnés</span>
+                                <i class="fa-solid fa-chevron-right text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            </button>
+                        </div>
+
+                        <!-- Auto-spin toggle -->
+                        <div class="pt-4 border-t border-white/10">
+                            <button id="toggleAutoSpinBtn" onclick="toggleAutoSpin()" class="w-full py-3 px-4 rounded-xl bg-apple-blue/20 hover:bg-apple-blue text-apple-blue hover:text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 border border-apple-blue/40">
+                                <i class="fa-solid fa-rotate"></i> <span id="spinBtnText">Pausar GIRO 360°</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3D Canvas Center Stage -->
+                    <div class="lg:col-span-2 order-1 lg:order-2 flex flex-col items-center justify-center relative min-h-[420px] bg-black/40 rounded-3xl border border-white/10 shadow-inner">
+                        
+                        <!-- 3D Canvas -->
+                        <div id="canvas360-container" class="w-full h-[400px] sm:h-[450px] relative">
+                            <!-- Canvas created by Three.js -->
+                        </div>
+
+                        <!-- Overlay Drag Instructions -->
+                        <div class="absolute bottom-4 bg-black/70 backdrop-blur-md px-4 py-1.5 rounded-full text-xs text-gray-300 border border-white/10 pointer-events-none flex items-center gap-2">
+                            <i class="fa-solid fa-hand-pointer text-apple-blue animate-bounce"></i> Arrastra para rotar 360° libremente
+                        </div>
+
+                        <!-- Hotspot Annotations Overlays -->
+                        <div id="hotspot-sensor" class="hotspot-pin hidden" onclick="showHotspotInfo('sensor')" title="Sensor Óptico OP6">1</div>
+                        <div id="hotspot-rfid" class="hotspot-pin hidden" onclick="showHotspotInfo('rfid')" title="Antena RFID">2</div>
+                        <div id="hotspot-led" class="hotspot-pin hidden" onclick="showHotspotInfo('led')" title="LED Indicador">3</div>
+                        <div id="hotspot-back" class="hotspot-pin hidden" onclick="showHotspotInfo('back')" title="Conector RJ45/Wiegand">4</div>
+                    </div>
+
+                    <!-- Feature Detail Info Card (Right) -->
+                    <div class="space-y-4 order-3">
+                        <div class="glass-light p-6 rounded-2xl border border-white/10 space-y-4" id="feature-detail-card">
+                            <div class="w-10 h-10 rounded-xl bg-apple-blue/20 text-apple-blue flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-microchip" id="detail-icon"></i>
+                            </div>
+                            <h4 class="font-display text-xl font-bold text-white" id="detail-title">Sensor Óptico OP6</h4>
+                            <p class="text-sm text-gray-300 leading-relaxed" id="detail-desc">
+                                Incorpora el algoritmo de última generación de Suprema con CPU de 1.0 GHz, logrando hasta 10,000 comparaciones por segundo con detección de huella falsa (LFD).
+                            </p>
+                            <div class="pt-2 border-t border-white/10 text-xs text-apple-blue font-semibold flex items-center gap-1">
+                                <i class="fa-solid fa-shield-halved"></i> Configuración Suprema Certificada
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <section id="blueprints" class="py-16">
+            <div class="text-center space-y-3 reveal mb-12">
+                <span class="px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-bold uppercase tracking-widest">
+                    <i class="fa-solid fa-ruler-combined"></i> Diagrama de Dimensiones
+                </span>
+                <h2 class="font-display text-3xl sm:text-5xl font-bold text-white">
+                    Especificaciones Físicas & Didácticas
+                </h2>
+                <p class="text-gray-400 max-w-xl mx-auto text-sm">
+                    Análisis de ingeniería del chasis Mullion ultra-delgado diseñado para marcos de puertas y espacios reducidos.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Didactic Diagram SVG -->
+                <div class="lg:col-span-2 glass-dark rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center gap-8 reveal">
+                    <div class="flex-1 space-y-4">
+                        <h3 class="font-display text-2xl font-bold text-white">Diseño Formato Mullion</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            Con tan solo <strong>50 mm de ancho</strong>, el BioEntry P2 se adapta perfectamente a los perfiles de aluminio y marcos estrechos de oficinas ejecutivas sin requerir adecuaciones invasivas.
+                        </p>
+                        <ul class="space-y-2 text-xs text-gray-300">
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Altura: 164.0 mm</li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Ancho: 50.0 mm</li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Profundidad: 37.5 mm</li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-green-400"></i> Peso neto: 196 gramos</li>
+                        </ul>
+                    </div>
+
+                    <div class="flex-1 w-full flex justify-center bg-black/40 p-6 rounded-2xl border border-white/10">
+                        <!-- Blueprint Dimension SVG -->
+                        <svg class="w-full max-w-[260px] h-64" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Background Grid -->
+                            <path d="M0 30 H300 M0 60 H300 M0 90 H300 M0 120 H300 M0 150 H300 M0 180 H300 M0 210 H300 M0 240 H300 M0 270 H300" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+                            <path d="M30 0 V300 M60 0 V300 M90 0 V300 M120 0 V300 M150 0 V300 M180 0 V300 M210 0 V300 M240 0 V300 M270 0 V300" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+                            
+                            <!-- Front View Outline -->
+                            <rect x="90" y="40" width="70" height="220" rx="10" fill="#12141a" stroke="#0071e3" stroke-width="2"/>
+                            <!-- Side View Outline -->
+                            <rect x="180" y="40" width="40" height="220" rx="6" fill="#1a1c24" stroke="#34c759" stroke-width="2"/>
+                            
+                            <!-- Dimension Lines -->
+                            <!-- Width Line -->
+                            <line x1="90" y1="20" x2="160" y2="20" stroke="#00e5ff" stroke-width="1.5"/>
+                            <line x1="90" y1="15" x2="90" y2="25" stroke="#00e5ff" stroke-width="1.5"/>
+                            <line x1="160" y1="15" x2="160" y2="25" stroke="#00e5ff" stroke-width="1.5"/>
+                            <text x="125" y="14" fill="#00e5ff" font-size="10" font-family="Inter" text-anchor="middle" font-weight="700">50 mm</text>
+                            
+                            <!-- Height Line -->
+                            <line x1="70" y1="40" x2="70" y2="260" stroke="#00e5ff" stroke-width="1.5"/>
+                            <line x1="65" y1="40" x2="75" y2="40" stroke="#00e5ff" stroke-width="1.5"/>
+                            <line x1="65" y1="260" x2="75" y2="260" stroke="#00e5ff" stroke-width="1.5"/>
+                            <text x="50" y="155" fill="#00e5ff" font-size="10" font-family="Inter" text-anchor="middle" font-weight="700" transform="rotate(-90 50 155)">164 mm</text>
+
+                            <!-- Depth Line -->
+                            <line x1="180" y1="275" x2="220" y2="275" stroke="#34c759" stroke-width="1.5"/>
+                            <line x1="180" y1="270" x2="180" y2="280" stroke="#34c759" stroke-width="1.5"/>
+                            <line x1="220" y1="270" x2="220" y2="280" stroke="#34c759" stroke-width="1.5"/>
+                            <text x="200" y="292" fill="#34c759" font-size="10" font-family="Inter" text-anchor="middle" font-weight="700">37.5 mm</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Technical Specs Box -->
+                <div class="glass-dark rounded-[2.5rem] p-8 flex flex-col justify-between reveal">
+                    <div>
+                        <h3 class="font-display text-xl font-bold text-white mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-green-400"></i> Parámetros Clave
+                        </h3>
+                        <div class="space-y-3 text-xs">
+                            <div class="flex justify-between border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Capacidad Huellas:</span>
+                                <span class="font-bold text-white">10,000 (1:N)</span>
+                            </div>
+                            <div class="flex justify-between border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Capacidad Eventos:</span>
+                                <span class="font-bold text-white">1,000,000 registros</span>
+                            </div>
+                            <div class="flex justify-between border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Frecuencias RFID:</span>
+                                <span class="font-bold text-white">125kHz + 13.56MHz</span>
+                            </div>
+                            <div class="flex justify-between border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Interfaz de Red:</span>
+                                <span class="font-bold text-white">10/100 Mbps TCP/IP</span>
+                            </div>
+                            <div class="flex justify-between border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Alimentación:</span>
+                                <span class="font-bold text-white">12V DC (Max 500mA)</span>
+                            </div>
+                            <div class="flex justify-between border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Certificaciones:</span>
+                                <span class="font-bold text-white">CE, FCC, KC, RoHS</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 pt-4 border-t border-white/10 text-center">
+                        <span class="text-xs text-gray-400 italic">Soporta BioStar 2 Web-based Management</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="comparison" class="py-16">
+            
+            <div class="text-center space-y-4 reveal mb-10">
+                <span class="px-4 py-1.5 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-bold uppercase tracking-widest">
+                    <i class="fa-solid fa-chart-line"></i> Análisis de Mercado 2026
+                </span>
+                <h2 class="font-display text-3xl sm:text-5xl font-bold text-white">
+                    Comparativa de Proveedores Evaluados
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto text-sm sm:text-base">
+                    Cuadro analítico de precios finales con IVA del 16% incluido para el lector Suprema BioEntry P2 (Modelo BEP-2OD).
+                </p>
+            </div>
+
+            <!-- Provider Cards Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch mb-12">
+
+                <!-- Proveedor 2: Yovsol -->
+                <div class="glass-dark rounded-[2.5rem] p-8 flex flex-col justify-between reveal hover:border-white/30 transition-all">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs font-bold text-gray-400 tracking-wider uppercase">Opción 2</span>
+                            <span class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 text-xs font-bold">2</span>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-white mb-1">Yovsol Consultoría</h3>
+                        <p class="text-xs text-gray-400 mb-6">Propuesta Estándar</p>
+
+                        <div class="glass-light rounded-2xl p-6 text-center border border-white/10 mb-6">
+                            <span class="text-xs text-gray-400 uppercase tracking-widest block mb-1">Precio Total (Con IVA)</span>
+                            <span class="font-display text-4xl font-bold text-white">$8,269.64</span>
+                            <span class="text-xs text-gray-400 block mt-1">MXN</span>
+                        </div>
+
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex justify-between border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Precio Subtotal:</span>
+                                <span class="font-medium text-gray-200">$7,129.00</span>
+                            </li>
+                            <li class="flex justify-between border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Tiempo Entrega:</span>
+                                <span class="font-medium text-gray-200">4 a 6 días hábiles</span>
+                            </li>
+                            <li class="flex justify-between border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Condición de Pago:</span>
+                                <span class="font-semibold text-amber-400"><i class="fa-solid fa-triangle-exclamation text-xs mr-1"></i> Contado 100%</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-8 pt-4 border-t border-white/10 text-xs text-gray-400 text-center">
+                        Diferencia: +$219.24 MXN vs Gama Sistemas
+                    </div>
+                </div>
+
+                <!-- Proveedor 1: Gama Sistemas (GANADOR) -->
+                <div class="glass-highlight rounded-[2.5rem] p-8 flex flex-col justify-between reveal z-10 lg:-translate-y-4 shadow-2xl">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-bold uppercase tracking-wider border border-green-500/40">
+                                <i class="fa-solid fa-trophy mr-1"></i> Recomendado
+                            </span>
+                            <span class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold shadow-lg">1</span>
+                        </div>
+                        <h3 class="font-display text-3xl font-bold text-white mb-1">Gama Sistemas</h3>
+                        <p class="text-xs text-green-400 font-semibold mb-6">Mejor Oferta Económica & Financiera</p>
+
+                        <div class="bg-white/10 rounded-2xl p-6 text-center border border-white/20 backdrop-blur-md mb-6 shadow-inner">
+                            <span class="text-xs text-green-300 uppercase tracking-widest block mb-1">Precio Más Bajo (Con IVA)</span>
+                            <span class="font-display text-5xl font-bold text-white drop-shadow-md">$8,050.40</span>
+                            <span class="text-xs text-green-200 block mt-1">MXN</span>
+                        </div>
+
+                        <ul class="space-y-4 text-sm">
+                            <li class="flex justify-between border-b border-white/20 pb-2">
+                                <span class="text-gray-300">Precio Subtotal:</span>
+                                <span class="font-bold text-lg text-white">$6,940.00</span>
+                            </li>
+                            <li class="flex justify-between border-b border-white/20 pb-2">
+                                <span class="text-gray-300">Tiempo Entrega:</span>
+                                <span class="font-bold text-white">4 a 6 días hábiles</span>
+                            </li>
+                            <li class="flex justify-between items-center bg-green-500/20 p-3 rounded-xl border border-green-500/40">
+                                <span class="text-green-300 font-medium">Condición de Pago:</span>
+                                <span class="font-extrabold text-green-400 text-base">Crédito 45 Días</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-8 pt-4 border-t border-white/20 text-xs text-green-300 text-center font-semibold">
+                        <i class="fa-solid fa-circle-check"></i> Máximo ahorro + Financiamiento preferencial
+                    </div>
+                </div>
+
+                <!-- Proveedor 3: MG Micros -->
+                <div class="glass-dark rounded-[2.5rem] p-8 flex flex-col justify-between reveal hover:border-white/30 transition-all">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs font-bold text-gray-400 tracking-wider uppercase">Opción 3</span>
+                            <span class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 text-xs font-bold">3</span>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold text-white mb-1">MG Micros</h3>
+                        <p class="text-xs text-gray-400 mb-6">Entrega Inmediata con Sobreprecio</p>
+
+                        <div class="glass-light rounded-2xl p-6 text-center border border-white/10 mb-6">
+                            <span class="text-xs text-gray-400 uppercase tracking-widest block mb-1">Precio Total (Con IVA)</span>
+                            <span class="font-display text-4xl font-bold text-red-400">$9,280.00</span>
+                            <span class="text-xs text-gray-400 block mt-1">MXN</span>
+                        </div>
+
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex justify-between border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Precio Subtotal:</span>
+                                <span class="font-medium text-gray-200">$8,000.00</span>
+                            </li>
+                            <li class="flex justify-between border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Tiempo Entrega:</span>
+                                <span class="font-medium text-green-400 font-semibold">Entrega Inmediata</span>
+                            </li>
+                            <li class="flex justify-between border-b border-white/10 pb-2">
+                                <span class="text-gray-400">Condición de Pago:</span>
+                                <span class="font-medium text-gray-200">Crédito</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-8 pt-4 border-t border-white/10 text-xs text-red-400 text-center font-medium">
+                        Sobreprecio: +$1,229.60 MXN vs Gama Sistemas
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Multi-Unit Interactive Savings Calculator -->
+            <div class="glass-dark rounded-[2.5rem] p-8 border border-white/15 reveal">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div class="space-y-2 text-center md:text-left flex-1">
+                        <h3 class="font-display text-2xl font-bold text-white flex items-center gap-2 justify-center md:justify-start">
+                            <i class="fa-solid fa-calculator text-apple-blue"></i> Simulador de Ahorro Proyectado
+                        </h3>
+                        <p class="text-xs text-gray-400">Ajusta el número de lectores requeridos para calcular el ahorro institucional total:</p>
+                        
+                        <div class="pt-4 flex items-center gap-4 max-w-xs mx-auto md:mx-0">
+                            <label for="unitSlider" class="text-xs font-semibold text-gray-300">Unidades:</label>
+                            <input type="range" id="unitSlider" min="1" max="25" value="1" oninput="updateCalculator(this.value)" class="w-full accent-apple-blue cursor-pointer">
+                            <span id="unitCountDisplay" class="font-bold text-lg text-apple-blue w-8">1</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 w-full md:w-auto">
+                        <div class="glass-light p-4 rounded-2xl text-center min-w-[140px]">
+                            <span class="text-[10px] text-gray-400 uppercase tracking-widest block">Inversión Gama Sistemas</span>
+                            <span id="calcTotalGama" class="font-display text-2xl font-bold text-white">$8,050.40</span>
+                        </div>
+                        <div class="glass-light p-4 rounded-2xl text-center min-w-[140px] border border-green-500/30 bg-green-500/10">
+                            <span class="text-[10px] text-green-300 uppercase tracking-widest block">Ahorro Generado</span>
+                            <span id="calcSavings" class="font-display text-2xl font-bold text-green-400">$1,229.60</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="verdict" class="py-20 flex items-center justify-center">
+            <div class="glass-dark rounded-[3rem] p-8 sm:p-16 w-full max-w-4xl text-center space-y-8 reveal relative overflow-hidden border border-green-500/40">
+                
+                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg h-64 bg-green-500/20 blur-[120px] rounded-full pointer-events-none"></div>
+
+                <div class="inline-flex items-center gap-2 px-6 py-2 rounded-full border border-green-500/40 bg-green-500/10 text-green-400 text-xs font-bold tracking-widest uppercase">
+                    <i class="fa-solid fa-award text-sm"></i> Dictamen Definitivo de Selección
+                </div>
+
+                <div class="space-y-4 relative z-10">
+                    <h2 class="font-display text-3xl sm:text-5xl font-bold text-gradient leading-tight">
+                        Emitir Orden de Compra a Favor de <br/><span class="text-green-400">Gama Sistemas</span>
+                    </h2>
+                    <p class="text-base sm:text-xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed">
+                        Por otorgar la propuesta económica más conveniente (<strong class="text-white">$8,050.40 MXN IVA incl.</strong>) y brindar las mejores facilidades financieras con <strong class="text-green-400">45 Días de Crédito</strong>.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-10 text-left pt-4">
+                    <div class="glass-light p-5 rounded-2xl border border-white/10">
+                        <span class="text-[10px] text-gray-400 uppercase tracking-wider block mb-1">Producto Requerido</span>
+                        <p class="font-bold text-sm text-white">Suprema BioEntry P2</p>
+                        <span class="text-xs text-gray-400">Modelo BEP-2OD</span>
+                    </div>
+                    <div class="glass-light p-5 rounded-2xl border border-white/10">
+                        <span class="text-[10px] text-gray-400 uppercase tracking-wider block mb-1">Folio Requisición</span>
+                        <p class="font-bold text-sm text-white">GS-02102026</p>
+                        <span class="text-xs text-gray-400">Ref. C1L-20041</span>
+                    </div>
+                    <div class="glass-light p-5 rounded-2xl border border-green-500/30 bg-green-500/10">
+                        <span class="text-[10px] text-green-400 uppercase tracking-wider block mb-1">Estatus Adjudicación</span>
+                        <p class="font-bold text-sm text-green-400">Aprobado para Firma</p>
+                        <span class="text-xs text-gray-400">Vigencia: Octubre 2026</span>
+                    </div>
+                </div>
+
+                <div class="pt-6 relative z-10 flex justify-center gap-4">
+                    <button onclick="window.print()" class="px-8 py-3.5 rounded-full glass-light hover:bg-white/15 border border-white/20 text-white font-medium text-sm transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-file-pdf text-red-400"></i> Exportar Dictamen a PDF / Imprimir
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        let scene, camera, renderer, deviceGroup;
+        let isSpinning = true;
+        let isMouseDown = false;
+        let mouseX = 0, mouseY = 0;
+        let targetRotationX = 0, targetRotationY = 0;
+
+        const featureDetails = {
+            sensor: {
+                icon: 'fa-fingerprint',
+                title: 'Sensor Óptico de Alta Precisión OP6',
+                desc: 'Sensor biométrico con algoritmo de huella líder en la industria, CPU de 1.0 GHz y Detección de Dedo Vivo (LFD) para bloquear intentos de suplantación con moldes o silicona.'
+            },
+            rfid: {
+                icon: 'fa-wifi',
+                title: 'Lectura RFID Doble Frecuencia',
+                desc: 'Soporte multiformato integral: 125kHz EM y 13.56MHz Mifare, DESFire EV1/EV2/EV3, FeliCa y compatibilidad con credenciales móviles NFC.'
+            },
+            led: {
+                icon: 'fa-lightbulb',
+                title: 'Luz Indicadora LED & Audio Multi-tono',
+                desc: 'Feedback visual inmediato mediante tira LED RGB y avisos sonoros que notifican el acceso permitido, denegado o eventos del sistema.'
+            },
+            back: {
+                icon: 'fa-network-wired',
+                title: 'Conectividad IP & Montaje Mullion',
+                desc: 'Soporta comunicación TCP/IP Fast Ethernet (100 Mbps), RS-485 y Wiegand. La placa metálica trasera asegura un montaje invisible en marcos delgados.'
+            }
+        };
+
+        function init3DViewer() {
+            const container = document.getElementById('canvas360-container');
+            if (!container) return;
+
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            // Escena
+            scene = new THREE.Scene();
+
+            // Cámara
+            camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+            camera.position.set(0, 0, 14);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
+
+            // Iluminación
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0x0071e3, 2.5);
+            dirLight.position.set(5, 10, 7);
+            scene.add(dirLight);
+
+            const greenLight = new THREE.DirectionalLight(0x34c759, 1.5);
+            greenLight.position.set(-5, -5, 5);
+            scene.add(greenLight);
+
+            // Grupo principal del Suprema BioEntry P2
+            deviceGroup = new THREE.Group();
+
+            // 1. Chasis Principal (Mullion Slim Shape)
+            const bodyGeo = new THREE.BoxGeometry(2.4, 7.8, 1.2);
+            const bodyMat = new THREE.MeshStandardMaterial({ 
+                color: 0x1f2128, 
+                roughness: 0.3, 
+                metalness: 0.6 
+            });
+            const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
+            deviceGroup.add(bodyMesh);
+
+            // 2. Cristal Frontal Delgado
+            const glassGeo = new THREE.BoxGeometry(2.2, 7.5, 0.1);
+            const glassMat = new THREE.MeshStandardMaterial({ 
+                color: 0x050507, 
+                roughness: 0.1, 
+                metalness: 0.9 
+            });
+            const glassMesh = new THREE.Mesh(glassGeo, glassMat);
+            glassMesh.position.z = 0.61;
+            deviceGroup.add(glassMesh);
+
+            // 3. Sensor Óptico de Huella (Prisma con brillo cian/verde)
+            const sensorGeo = new THREE.BoxGeometry(1.6, 1.8, 0.2);
+            const sensorMat = new THREE.MeshStandardMaterial({ 
+                color: 0x00e5ff, 
+                emissive: 0x005577, 
+                roughness: 0.2, 
+                metalness: 0.8 
+            });
+            const sensorMesh = new THREE.Mesh(sensorGeo, sensorMat);
+            sensorMesh.position.set(0, 2.1, 0.66);
+            deviceGroup.add(sensorMesh);
+
+            // 4. Tira Indicadora LED RGB
+            const ledGeo = new THREE.BoxGeometry(1.6, 0.12, 0.1);
+            const ledMat = new THREE.MeshStandardMaterial({ 
+                color: 0x34c759, 
+                emissive: 0x34c759, 
+                emissiveIntensity: 1 
+            });
+            const ledMesh = new THREE.Mesh(ledGeo, ledMat);
+            ledMesh.position.set(0, 1.0, 0.67);
+            deviceGroup.add(ledMesh);
+
+            // 5. Zona de Antena RFID (Anillo)
+            const rfidRingGeo = new THREE.TorusGeometry(0.5, 0.04, 16, 32);
+            const rfidRingMat = new THREE.MeshStandardMaterial({ 
+                color: 0x0071e3, 
+                emissive: 0x0033aa 
+            });
+            const rfidRingMesh = new THREE.Mesh(rfidRingGeo, rfidRingMat);
+            rfidRingMesh.position.set(0, -0.8, 0.67);
+            deviceGroup.add(rfidRingMesh);
+
+            // 6. Placa Metálica Posterior de Montaje
+            const plateGeo = new THREE.BoxGeometry(2.3, 7.6, 0.15);
+            const plateMat = new THREE.MeshStandardMaterial({ 
+                color: 0x8e8e93, 
+                metalness: 0.9, 
+                roughness: 0.2 
+            });
+            const plateMesh = new THREE.Mesh(plateGeo, plateMat);
+            plateMesh.position.z = -0.65;
+            deviceGroup.add(plateMesh);
+
+            // 7. Arnés / Conector Trasero
+            const cableGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.8, 16);
+            const cableMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+            const cableMesh = new THREE.Mesh(cableGeo, cableMat);
+            cableMesh.rotation.x = Math.PI / 2;
+            cableMesh.position.set(0, -2.5, -0.8);
+            deviceGroup.add(cableMesh);
+
+            scene.add(deviceGroup);
+
+            // Listeners de arrastre mouse/touch
+            const dom = container;
+            dom.addEventListener('mousedown', onMouseDown);
+            dom.addEventListener('mousemove', onMouseMove);
+            dom.addEventListener('mouseup', onMouseUp);
+            dom.addEventListener('touchstart', onTouchStart, { passive: true });
+            dom.addEventListener('touchmove', onTouchMove, { passive: true });
+            dom.addEventListener('touchend', onMouseUp);
+
+            window.addEventListener('resize', onWindowResize);
+
+            animate();
+        }
+
+        function onMouseDown(e) {
+            isMouseDown = true;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        }
+
+        function onMouseMove(e) {
+            if (!isMouseDown) return;
+            const deltaX = e.clientX - mouseX;
+            const deltaY = e.clientY - mouseY;
+
+            targetRotationY += deltaX * 0.01;
+            targetRotationX += deltaY * 0.01;
+
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            isSpinning = false;
+            updateSpinBtnUI();
+        }
+
+        function onMouseUp() {
+            isMouseDown = false;
+        }
+
+        function onTouchStart(e) {
+            if (e.touches.length === 1) {
+                isMouseDown = true;
+                mouseX = e.touches[0].clientX;
+                mouseY = e.touches[0].clientY;
+            }
+        }
+
+        function onTouchMove(e) {
+            if (!isMouseDown || e.touches.length !== 1) return;
+            const deltaX = e.touches[0].clientX - mouseX;
+            const deltaY = e.touches[0].clientY - mouseY;
+
+            targetRotationY += deltaX * 0.01;
+            targetRotationX += deltaY * 0.01;
+
+            mouseX = e.touches[0].clientX;
+            mouseY = e.touches[0].clientY;
+            isSpinning = false;
+            updateSpinBtnUI();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (isSpinning) {
+                targetRotationY += 0.008;
+            }
+
+            // Interpolación suave
+            deviceGroup.rotation.y += (targetRotationY - deviceGroup.rotation.y) * 0.1;
+            deviceGroup.rotation.x += (targetRotationX - deviceGroup.rotation.x) * 0.1;
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            const container = document.getElementById('canvas360-container');
+            if (!container || !renderer || !camera) return;
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        }
+
+        function setCameraView(viewKey) {
+            isSpinning = false;
+            updateSpinBtnUI();
+
+            switch(viewKey) {
+                case 'front':
+                    targetRotationX = 0;
+                    targetRotationY = 0;
+                    showHotspotInfo('sensor');
+                    break;
+                case 'sensor':
+                    targetRotationX = -0.2;
+                    targetRotationY = 0;
+                    showHotspotInfo('sensor');
+                    break;
+                case 'rfid':
+                    targetRotationX = 0.2;
+                    targetRotationY = 0;
+                    showHotspotInfo('rfid');
+                    break;
+                case 'back':
+                    targetRotationX = 0;
+                    targetRotationY = Math.PI;
+                    showHotspotInfo('back');
+                    break;
+            }
+        }
+
+        function toggleAutoSpin() {
+            isSpinning = !isSpinning;
+            updateSpinBtnUI();
+        }
+
+        function updateSpinBtnUI() {
+            const btnText = document.getElementById('spinBtnText');
+            if (btnText) {
+                btnText.textContent = isSpinning ? 'Pausar GIRO 360°' : 'Reanudar GIRO 360°';
+            }
+        }
+
+        function showHotspotInfo(key) {
+            const data = featureDetails[key];
+            if (!data) return;
+
+            document.getElementById('detail-icon').className = `fa-solid ${data.icon}`;
+            document.getElementById('detail-title').textContent = data.title;
+            document.getElementById('detail-desc').textContent = data.desc;
+        }
+
+        function updateCalculator(val) {
+            document.getElementById('unitCountDisplay').textContent = val;
+            const gamaUnitPrice = 8050.40;
+            const savingsPerUnit = 1229.60;
+
+            const totalGama = gamaUnitPrice * val;
+            const totalSavings = savingsPerUnit * val;
+
+            document.getElementById('calcTotalGama').textContent = '$' + totalGama.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('calcSavings').textContent = '$' + totalSavings.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        // Animación de aparición con el scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            init3DViewer();
+
+            const reveals = document.querySelectorAll('.reveal');
+            const revealOnScroll = () => {
+                const windowHeight = window.innerHeight;
+                reveals.forEach(reveal => {
+                    const elementTop = reveal.getBoundingClientRect().top;
+                    if (elementTop < windowHeight - 100) {
+                        reveal.classList.add('active');
+                    }
+                });
+            };
+
+            window.addEventListener('scroll', revealOnScroll);
+            revealOnScroll();
+        });
+    </script>
+</body>
+</html>
